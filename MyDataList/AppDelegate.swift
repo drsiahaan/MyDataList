@@ -17,9 +17,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      ) -> Bool {
          
          window = UIWindow(frame: UIScreen.main.bounds)
-         let rootVC = ClaimListRouter.createModule()
-         window?.rootViewController = rootVC
+         let claimListVC = ClaimListRouter.createModule()
+         let navigationController = UINavigationController(rootViewController: claimListVC)
+         window?.rootViewController = navigationController
          window?.makeKeyAndVisible()
+         
          return true
      }
 
