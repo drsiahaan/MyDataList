@@ -10,6 +10,8 @@ import UIKit
 class ClaimTableViewCell: UITableViewCell {
     static let identifier = "ClaimTableViewCell"
 
+    var claim: Claim?
+
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .boldSystemFont(ofSize: 16)
@@ -54,6 +56,7 @@ class ClaimTableViewCell: UITableViewCell {
     }
 
     func configure(with claim: Claim) {
+        self.claim = claim
         titleLabel.text = claim.title
         descriptionLabel.text = claim.body
         metaLabel.text = "Claim ID: \(claim.id) • Claimant ID: \(claim.userId)"
