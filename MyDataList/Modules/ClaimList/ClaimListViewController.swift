@@ -140,6 +140,10 @@ extension ClaimListViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        let selectedClaim = filteredClaims[indexPath.row]
+        let detailVC = ClaimDetailRouter.createModule(with: selectedClaim)
+        navigationController?.pushViewController(detailVC, animated: true)
+        print("++++++++ 123")
     }
 }
 
