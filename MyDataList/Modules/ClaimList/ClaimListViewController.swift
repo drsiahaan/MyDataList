@@ -46,6 +46,8 @@ class ClaimListViewController: UIViewController {
         return control
     }()
 
+    private var activityIndicator: UIActivityIndicatorView!
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -85,6 +87,16 @@ class ClaimListViewController: UIViewController {
             tableView.leftAnchor.constraint(equalTo: view.leftAnchor),
             tableView.rightAnchor.constraint(equalTo: view.rightAnchor)
         ])
+
+        activityIndicator = UIActivityIndicatorView(style: .large)
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        activityIndicator.hidesWhenStopped = true
+        view.addSubview(activityIndicator)
+
+        NSLayoutConstraint.activate([
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
     }
 
     @objc private func applyFilterAndSearch() {
@@ -111,6 +123,20 @@ class ClaimListViewController: UIViewController {
         filteredClaims = filtered
         tableView.reloadData()
     }
+
+    private func showErrorAlert(message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+
+    private func setLoadingState(_ isLoading: Bool) {
+        if isLoading {
+            activityIndicator.startAnimating()
+        } else {
+            activityIndicator.stopAnimating()
+        }
+    }
 }
 
 // MARK: - ClaimListViewInput
@@ -121,7 +147,12 @@ extension ClaimListViewController: ClaimListViewInput {
     }
 
     func showError(_ error: String) {
-        print("Error:", error)
+        setLoadingState(false)
+        showErrorAlert(message: error)
+    }
+
+    func showLoading(_ isLoading: Bool) {
+        setLoadingState(isLoading)
     }
 }
 
@@ -143,7 +174,6 @@ extension ClaimListViewController: UITableViewDataSource, UITableViewDelegate {
         let selectedClaim = filteredClaims[indexPath.row]
         let detailVC = ClaimDetailRouter.createModule(with: selectedClaim)
         navigationController?.pushViewController(detailVC, animated: true)
-        print("++++++++ 123")
     }
 }
 
