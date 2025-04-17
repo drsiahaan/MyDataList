@@ -10,7 +10,7 @@ import UIKit
 class ClaimTableViewCell: UITableViewCell {
     static let identifier = "ClaimTableViewCell"
 
-    var claim: Claim?
+    var claim: MappedClaim?
 
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -55,10 +55,10 @@ class ClaimTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(with claim: Claim) {
+    func configure(claim: MappedClaim) {
         self.claim = claim
         titleLabel.text = claim.title
         descriptionLabel.text = claim.body
-        metaLabel.text = "Claim ID: \(claim.id) • Claimant ID: \(claim.userId)"
+        metaLabel.text = "Claim ID: \(claim.id) • Claimant ID: \(claim.userName)"
     }
 }

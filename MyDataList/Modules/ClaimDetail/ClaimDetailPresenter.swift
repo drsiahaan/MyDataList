@@ -12,9 +12,9 @@ class ClaimDetailPresenter {
     var interactor: ClaimDetailInteractorInput?
     var router: ClaimDetailRouterInput?
     
-    private let claim: Claim
+    private let claim: MappedClaim
 
-    init(claim: Claim) {
+    init(claim: MappedClaim) {
         self.claim = claim
     }
 }

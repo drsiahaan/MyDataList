@@ -8,7 +8,7 @@
 import UIKit
 
 class ClaimDetailRouter: ClaimDetailRouterInput {
-    static func createModule(with claim: Claim) -> UIViewController {
+    static func createModule(with claim: MappedClaim) -> UIViewController {
         let view = ClaimDetailViewController()
         let presenter = ClaimDetailPresenter(claim: claim)
         let interactor = ClaimDetailInteractor()

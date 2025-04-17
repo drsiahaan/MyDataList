@@ -8,7 +8,7 @@
 import UIKit
 
 protocol ClaimDetailViewInput: AnyObject {
-    func showClaimDetail(_ claim: Claim)
+    func showClaimDetail(_ claim: MappedClaim)
 }
 
 protocol ClaimDetailViewOutput: AnyObject {
@@ -18,5 +18,5 @@ protocol ClaimDetailViewOutput: AnyObject {
 protocol ClaimDetailInteractorInput: AnyObject {}
 
 protocol ClaimDetailRouterInput: AnyObject {
-    static func createModule(with claim: Claim) -> UIViewController
+    static func createModule(with claim: MappedClaim) -> UIViewController
 }

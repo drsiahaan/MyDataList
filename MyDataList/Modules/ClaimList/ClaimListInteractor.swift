@@ -11,6 +11,18 @@ class ClaimListInteractor: ClaimListInteractorInput {
     var presenter: ClaimListInteractorOutput?
     var claimService: ClaimServiceProtocol = ClaimService()
 
+    func fetchData() {
+        claimService.fetchData { [weak self] result in
+            switch result {
+            case .success(let data):
+                self?.presenter?.didFetchData(data)
+            case .failure(let error):
+                self?.presenter?.didFailToFetchData(error: error)
+            }
+        }
+    }
+    
+    
     func fetchClaims() {
         claimService.fetchClaims { [weak self] result in
             switch result {

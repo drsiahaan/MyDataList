@@ -14,14 +14,39 @@ class ClaimListPresenter {
 
     private var allClaims: [Claim] = []
     private var filteredClaims: [Claim] = []
-
+    private var datas: [User] = []
+    private var mappedClaim: [MappedClaim] = []
+    
     private var currentSearchQuery: String = ""
     private var currentFilterUserId: Int? = nil
+    
+    func mapClaimsToUserNames() -> [MappedClaim] {
+        let topClaims = Array(allClaims.prefix(10))
+        
+        guard datas.count >= topClaims.count else {
+            print("Jumlah user tidak cukup untuk mapping")
+            return []
+        }
+        let mapped = topClaims.enumerated().map { index, claim in
+            let userName = datas[index].name
+            return MappedClaim(id: claim.id, title: claim.title, body: claim.body, userName: userName)
+        }
+
+        return mapped
+    }
+
+
+
+
 }
 
 extension ClaimListPresenter: ClaimListViewOutput {
     func viewDidLoad() {
         interactor?.fetchClaims()
+    }
+    
+    func fetchData() {
+        interactor?.fetchData()
     }
 
     func didSearch(query: String) {
@@ -49,6 +74,16 @@ extension ClaimListPresenter: ClaimListViewOutput {
 }
 
 extension ClaimListPresenter: ClaimListInteractorOutput {
+    func didFetchData(_ data: [User]) {
+        self.datas = data
+        self.mappedClaim = mapClaimsToUserNames()
+        view?.showDatas(self.mappedClaim)
+    }
+    
+    func didFailToFetchData(error: any Error) {
+        view?.showError(error.localizedDescription)
+    }
+    
     func didFetchClaims(_ claims: [Claim]) {
         self.allClaims = claims
         self.filteredClaims = claims

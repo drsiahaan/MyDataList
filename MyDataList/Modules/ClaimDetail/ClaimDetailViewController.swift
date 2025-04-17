@@ -62,9 +62,9 @@ class ClaimDetailViewController: UIViewController {
 }
 
 extension ClaimDetailViewController: ClaimDetailViewInput {
-    func showClaimDetail(_ claim: Claim) {
+    func showClaimDetail(_ claim: MappedClaim) {
         titleLabel.text = claim.title
-        userIdLabel.text = "Claimant ID: \(claim.userId)"
+        userIdLabel.text = "Claimant ID: \(claim.userName)"
         bodyLabel.text = claim.body
     }
 }

@@ -25,4 +25,22 @@ class ClaimService: ClaimServiceProtocol {
             }
         }
     }
+    
+    func fetchData(completion: @escaping (Result<[User], Error>) -> Void) {
+        let url = "https://jsonplaceholder.typicode.com/users"
+        
+        AF.request(url).responseData { response in
+            switch response.result {
+            case .success(let data):
+                do {
+                    let claims = try JSONDecoder().decode([User].self, from: data)
+                    completion(.success(claims))
+                } catch {
+                    completion(.failure(error))
+                }
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
 }

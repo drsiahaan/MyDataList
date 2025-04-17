@@ -20,3 +20,15 @@ struct Claim: Equatable, Decodable {
                lhs.body == rhs.body
     }
 }
+
+struct User: Decodable {
+    let id: Int
+    let name: String
+}
+
+struct MappedClaim {
+    let id: Int
+    let title: String
+    let body: String
+    let userName: String
+}

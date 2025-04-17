@@ -11,7 +11,16 @@ class ClaimListViewController: UIViewController {
     var presenter: ClaimListViewOutput?
 
     private var claims: [Claim] = []
-    private var filteredClaims: [Claim] = []
+    private var datas: [MappedClaim] = []
+    private var filteredClaims: [MappedClaim] = []
+    var allClaims: [Claim] = []
+    var hasMoreData: Bool {
+        return filteredClaims.count < allClaims.count
+    }
+    private var loadedDataCount = 0
+    private let pageSize = 5
+    private var displayedClaims: [MappedClaim] = []
+
 
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -100,7 +109,7 @@ class ClaimListViewController: UIViewController {
     }
 
     @objc private func applyFilterAndSearch() {
-        var filtered = claims
+        var filtered = datas
 
         if let searchText = searchBar.text, !searchText.isEmpty {
             filtered = filtered.filter { claim in
@@ -116,12 +125,15 @@ class ClaimListViewController: UIViewController {
             if sortByClaimId {
                 return ascending ? $0.id < $1.id : $0.id > $1.id
             } else {
-                return ascending ? $0.userId < $1.userId : $0.userId > $1.userId
+                return ascending ? $0.userName < $1.userName : $0.userName > $1.userName
             }
         }
 
         filteredClaims = filtered
-        tableView.reloadData()
+        loadedDataCount = 0
+        displayedClaims = []
+        loadNextPage()
+
     }
 
     private func showErrorAlert(message: String) {
@@ -137,13 +149,28 @@ class ClaimListViewController: UIViewController {
             activityIndicator.stopAnimating()
         }
     }
+    
+    private func loadNextPage() {
+        let nextPageCount = min(loadedDataCount + pageSize, filteredClaims.count)
+        let newItems = Array(filteredClaims[loadedDataCount..<nextPageCount])
+        loadedDataCount = nextPageCount
+        displayedClaims.append(contentsOf: newItems)
+        tableView.reloadData()
+    }
+
 }
 
 // MARK: - ClaimListViewInput
 extension ClaimListViewController: ClaimListViewInput {
+    func showDatas(_ datas: [MappedClaim]) {
+        self.datas = datas
+        applyFilterAndSearch()
+    }
+    
     func showClaims(_ claims: [Claim]) {
         self.claims = claims
-        applyFilterAndSearch()
+        presenter?.fetchData()
+
     }
 
     func showError(_ error: String) {
@@ -159,13 +186,13 @@ extension ClaimListViewController: ClaimListViewInput {
 // MARK: - UITableViewDataSource, UITableViewDelegate
 extension ClaimListViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filteredClaims.count
+        return displayedClaims.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let claim = filteredClaims[indexPath.row]
+        let claim = displayedClaims[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: ClaimTableViewCell.identifier, for: indexPath) as! ClaimTableViewCell
-        cell.configure(with: claim)
+        cell.configure(claim: claim)
         return cell
     }
 
@@ -175,6 +202,19 @@ extension ClaimListViewController: UITableViewDataSource, UITableViewDelegate {
         let detailVC = ClaimDetailRouter.createModule(with: selectedClaim)
         navigationController?.pushViewController(detailVC, animated: true)
     }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let position = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let frameHeight = scrollView.frame.size.height
+
+        if position > contentHeight - frameHeight - 100 {
+            guard loadedDataCount < filteredClaims.count else { return }
+            loadNextPage()
+        }
+    }
+
+    
 }
 
 // MARK: - UISearchBarDelegate
